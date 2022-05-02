@@ -1,0 +1,81 @@
+version: '3.7'
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.2
+    user: elasticsearch
+    command: >
+      /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-nori 
+      || ./bin/elasticsearch-plugin install analysis-nori; 
+      /usr/local/bin/docker-entrypoint.sh"
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/logs:/usr/share/elasticsearch/logs
+      - ./elasticsearch/analysis:/usr/share/elasticsearch/config/analysis
+    networks:
+      - flowermall
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.2
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    networks:
+      - flowermall
+      
+  db: 
+    image: mariadb
+    restart: always
+    container_name: mariadb
+    ports: 
+      - "330:3306"
+    volumes:
+      - ./containers/db/scripts:/scripts
+      - ./containers/db/config/conf.d:/etc/mysql/conf.d
+      - ./containers/db/config/initdb.d:/docker-entrypoint-initdb.d
+      - ./containers/db/data:/var/lib/mysql
+    env_file: ./containers/db/.env
+    environment:
+      TZ: Asia/Seoul
+    networks:
+      - flowermall
+      
+  dashboard:
+    container_name: elkdashboard
+    environment:
+        TZ: Asia/Seoul
+    build: 
+      context: ./containers/dash
+    restart: always
+    ports:
+      - "8050:8050"
+    volumes: 
+      - "./src:/wd"
+      - "./containers/dash/datastore:/datastore"
+      - "./containers/dash/log:/log"
+    depends_on:
+      - db
+    env_file: ./containers/dash/.dev.env
+    networks:
+      - flowermall
+    command: ["python", "index.py"]
+
+networks:
+  flowermall:
+    driver: bridge
+    name: flowermall
+

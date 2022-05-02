@@ -1,0 +1,13 @@
+
+__pycache__
+
+dist/*
+containers/db/data/*
+containers/db/scripts/*
+containers/dash/datastore/*
+containers/dash/log/*
+containers/mongo/data/*
+
+!.gitkeep
+
+.DS_Store
