@@ -2,7 +2,6 @@ import requests
 import json
 
 url = "http://localhost:9200/issues"
-
 payload = json.dumps({
     "settings": {
         "index": {
@@ -15,8 +14,7 @@ payload = json.dumps({
                     "type":"custom",
                     "tokenizer":"korean_nori_tokenizer",
                     # "filter": [ "lowercase", "my_shingle_f","korean_posfilter", "edge_ngram_filter_front","edge_ngram_filter_back","trim" ]
-                    "filter": [ "lowercase","my_shingle_f" ]
-
+                    "filter": [ "lowercase","my_shingle_f", "korean_posfilter" ]
                 },
                 "title_analyzer":{
                     "type":"custom",
@@ -109,7 +107,7 @@ payload = json.dumps({
             },
             "description": {
                 "type": "text",
-                # "analyzer": "korean_nori_analyzer",
+                "analyzer": "korean_nori_analyzer",
                 # "search_analyzer": "title_analyzer"            
             },
             "tracker_id": {

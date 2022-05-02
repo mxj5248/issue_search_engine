@@ -16,82 +16,6 @@ from elasticsearch import Elasticsearch
 #  dashboard_layout  #
 #                    #
 ######################
-# dashboard_layout = html.Div([
-#     html.H1("이슈 통합 검색기"),
-#     html.Div([
-#         "검색 단어 : ",
-#         dcc.Input(id='my-input', placeholder="단어를 입력 해주세요.", type='text', debounce=True)
-#     ]),
-#     html.Br(),
-#     html.Div(id='my-output'),
-# ])
-# options = ["Redmine", "Portal", "Notion"]
-
-# def generate_table(dataframe, max_rows=30):
-#     df_drop_link = dataframe.drop(columns='url')
-
-#     body_content  = []
-#     for i in range(min(len(dataframe), max_rows)):
-#         for col in df_drop_link.columns:
-#             if col == '이슈번호':
-#                 body_content.append(html.Td(html.A(href=dataframe.iloc[i]['url'], children=dataframe.iloc[i][col], target='_blank'),style={'width':'80px','border': '1px solid'}))
-#             elif col == '상세설명':
-#                 body_content.append(html.Td(dataframe.iloc[i][col],style={'width':'200em','border': '1px solid',"white-space":"break-spaces",'overflow': 'auto','word-break': 'normal','word-wrap': 'break-word'}))
-#             # elif col == '제목':
-#             #     body_content.append(html.Td(dataframe.iloc[i][col],style={'width':'30em','border': '1px solid'}))
-#             else: 
-#                 body_content.append(html.Td(dataframe.iloc[i][col],style={'width':'100px','border': '1px solid','backgroundColor': 'red','color': 'white'}))
-
-#     return html.Table(
-#         # Header
-#         [html.Tr([html.Th(col) for col in df_drop_link.columns]) ] +
-#         # Body
-#         [html.Tr(
-#             body_content
-#         )]
-#     )
-#     return dash_table.DataTable(
-#     style_data={
-#         'whiteSpace': 'normal',
-#         'height': 'auto',
-#         'lineHeight': '15px',
-#         'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
-#     },
-#     data=dataframe.to_dict('records'),
-#     columns=[{'id': c, 'name': c} for c in dataframe.columns],
-#     style_cell={
-#         'overflow': 'hidden',
-#         'textOverflow': 'ellipsis',
-#         # 'maxWidth': 0
-#     },
-#     style_data_conditional=[
-#         {
-#             'if': {
-#                 'column_id': '이슈번호',
-#             },
-#             'width': '5%',
-#         },
-#         {
-#             'if': {
-#                 'column_id': '제목',
-#             },
-#             'width': '30%',
-#         },
-#         {
-#             'if': {
-#                 'column_id': '매치율',
-#             },
-#             'width': '10%',
-#             'backgroundColor': '#85144b',
-#             'color': 'white'
-#         },{
-#             'if': {
-#                 'column_id': '상세설명',
-#             },
-#             'width': '50%',
-#         }
-#     ]
-# )
 
 def search(keyword=None):
     body =  {
@@ -113,14 +37,14 @@ def search(keyword=None):
         #         "description": {}
         #     }
         # },
-        "highlight" : {
-            "type": "unified",
-            "require_field_match": False,
-            "number_of_fragments": 0,
-            "fields" : {
-                "*" : { "pre_tags" : ["<mark>"], "post_tags" : ["</mark>"] }
-            }
-        }
+        # "highlight" : {
+        #     "type": "unified",
+        #     "require_field_match": False,
+        #     "number_of_fragments": 0,
+        #     "fields" : {
+        #         "*" : { "pre_tags" : ["<mark>"], "post_tags" : ["</mark>"] }
+        #     }
+        # }
     }
 
     es = Elasticsearch("http://elasticsearch:9200")

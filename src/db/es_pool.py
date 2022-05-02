@@ -1,5 +1,8 @@
 from elasticsearch import Elasticsearch
 
+url = "http://elasticsearch"
+port = "9200"
+
 def get_conn():
-    es = Elasticsearch("http://elasticsearch:9200")
+    es = Elasticsearch(f'{url}:{port}')
     return es
