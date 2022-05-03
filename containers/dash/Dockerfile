@@ -11,6 +11,7 @@ RUN pip install pymysql
 RUN pip install IPython
 RUN pip3 install argon2-cffi
 RUN pip3 install elasticsearch
+RUN pip3 install apscheduler
 RUN python3 -m pip install elasticsearch
 
 # RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch analysis-nori

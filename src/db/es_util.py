@@ -41,13 +41,13 @@ from db.es_pool import get_conn
 global es
 es = get_conn()
 
-def create_index(index,body=None):
-    if not es.indices.exists(index=index):
-        if body is None:
-            r = es.indices.create(index=index)
-        else: 
-            r = es.indices.create(index=index, body=body)
-        return r
+# def create_index(index,body=None):
+#     if not es.indices.exists(index=index):
+#         if body is None:
+#             r = es.indices.create(index=index)
+#         else: 
+#             r = es.indices.create(index=index, body=body)
+#         return r
 
 def delete_index(index):
     if es.indices.exists(index=index):

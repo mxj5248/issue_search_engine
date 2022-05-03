@@ -48,7 +48,7 @@ def search(keyword=None):
     }
 
     es = Elasticsearch("http://elasticsearch:9200")
-    res = es.search(index='issues',body=body)
+    res = es.search(index=['redmine','portal'],body=body)
     return res
     
 dashboard_layout= html.Div([
