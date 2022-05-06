@@ -11,7 +11,10 @@ RUN pip install pymysql
 RUN pip install IPython
 RUN pip3 install argon2-cffi
 RUN pip3 install elasticsearch
-RUN pip3 install apscheduler
+RUN pip3 install --upgrade pip wheel
+# RUN pip3 install backports.zoneinfo
+
+# RUN pip install APScheduler==3.6.3
 RUN python3 -m pip install elasticsearch
 
 # RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch analysis-nori

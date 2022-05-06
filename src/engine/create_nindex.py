@@ -1,8 +1,14 @@
 import requests
 import json
+from db.es_util import delete_index
+from db.es_pool import get_conn
+
 def create_nt_index():
-    url = "http://localhost:9200/notion"
-    payload = json.dumps({
+    # url = "http://localhost:9200/notion"
+    index = "notion"
+    delete_index(index)
+    es = get_conn()
+    payload = {
         "settings": {
             "index": {
                 "number_of_shards": 1,
@@ -44,29 +50,29 @@ def create_nt_index():
         },
         "mappings": {
             "properties": {
-                "title": { #제목
-                    "type": "text"
+                "subject": { #제목
+                        "type": "text"
+                    },
+                "description": { #업무내용 
+                        "type": "text"
+                    },
+                "content_type": { # 유형
+                    "type":"text"
                 },
-            "content": { #업무내용 
-                    "type": "text"
+                "write_user": { # 작성자
+                    "type":"text"
                 },
-            "content_type": { # 유형
-                "type":"text"
-            },
-            "write_user": { # 작성자
-                "type":"text"
-            },
-            "hash_tag": { # 해시태그
-                "type":"text"
-            },
-            "created_on": { # 생성시점 
-                    "type": "date"
+                "hash_tag": { # 해시태그
+                    "type":"text"
+                },
+                "created_on": { # 생성시점 
+                        "type": "date"
                 },
             }
         }
-    })
+    }
     headers = {
         'Content-Type': 'application/json'
     }
 
-    response = requests.request("PUT", url, headers=headers, data=payload)
+    es.indices.create(index=index, headers=headers, body=payload)

@@ -119,3 +119,20 @@ print(row[0]['highlight'])
 # df = pd.DataFrame(data)
 # # print(row['_source']['subject'])
 # print(df)
+
+
+# def getIssues():
+#     conn = get_conn()
+#     cursor = conn.cursor(pymysql.cursors.DictCursor)
+#     # query = redmine_common_query_list['issues_d'] 
+#     query = "SELECT id, description, tracker_id, project_id, status_id, subject, created_on, updated_on FROM redmine.issues i WHERE i.created_on >= '2020-01-01' AND i.project_id in (77,79)"
+#     cursor.execute(query)
+    
+#     issue_list = []
+#     for (id, description, tracker_id, project_id, status_id, subject, created_on, updated_on) in cursor:
+#         print("Issue id {} found. created on: {}".format(id,created_on))
+#         issue = ProductIssue(id, description,tracker_id, project_id, status_id, subject, created_on, updated_on)
+#         issue_list.append(issue)
+
+#     release(conn)
+#     return issue_list

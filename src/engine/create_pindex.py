@@ -1,11 +1,12 @@
-import requests
-import json
+import time
 from db.es_util import delete_index
+from db.es_pool import get_conn
 
 def create_pt_index():
-    delete_index("portal")
-    url = "http://localhost:9200/portal"
-    payload = json.dumps({
+    index = "portal"
+    delete_index(index)
+    es = get_conn()
+    payload = {
         "settings": {
             "index": {
                 "number_of_shards": 1,
@@ -47,13 +48,16 @@ def create_pt_index():
         },
         "mappings": {
             "properties": {
+                "uid": { #uid이슈번호
+                    "type": "text"
+                },
                 "issue_data_num": { #이슈번호
                     "type": "long"
                 },
                 "title": { #제목
                     "type": "text"
                 },
-                "content": { #업무내용 
+                "description": { #업무내용 
                     "type": "text"
                 },
                 "issue_type": { # 이슈 유형
@@ -73,10 +77,19 @@ def create_pt_index():
                 },
             }
         }
-    })
+    }
     headers = {
         'Content-Type': 'application/json'
     }
 
-    response = requests.request("PUT", url, headers=headers, data=payload)
-    print(response.text)
+    es.indices.create(index=index, headers=headers, body=payload)
+        # session = requests.Session()
+        # retry = Retry(connect=3, backoff_factor=1)
+        # adapter = HTTPAdapter(max_retries=retry)
+        # session.mount('http://', adapter)
+        # session.mount('https://', adapter)
+
+        # response = session.request("PUT", url, headers=headers, data=payload, verify=False)
+
+        # response = requests.request("PUT", url, headers=headers, data=payload, verify=False)
+        # print(response.text)

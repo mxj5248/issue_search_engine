@@ -1,4 +1,4 @@
-from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.schedulers.background import BackgroundScheduler
 from pages.search_page.page import dashboard_layout as dashboard_layout1
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
@@ -34,10 +34,18 @@ def do_the_thing():
     jobElsCollect()
     return "OK", 200
 
-sched = BackgroundScheduler()
-@sched.scheduled_job('interval', hours=1, id='DashWork')
 def jobElsCollect():
     pushJob(CreateRedmineIndex)
+    pushJob(IngestRedmineData)
+    pushJob(CreatePortalIndex)
+    pushJob(IngestPortalData)
+    # pushJob(CreateNotionIndex)
+    # pushJob(IngestNotionData)
+
+# sched = BackgroundScheduler()
+# @sched.scheduled_job('interval', hours=1, id='DashWork')
+# def jobElsCollect():
+    # pushJob(CreateRedmineIndex)
     # pushJob(CreatePortalIndex)
     # pushJob(CreateNotionIndex)
     # pushJob(IngestRedmineData)
@@ -50,6 +58,6 @@ if __name__ == '__main__':
     # Run worker thread
     startWorker()
     # Run Scheduler
-    sched.start()
+    # sched.start()
     # Run Web server
     app.run_server(debug=APP_DEBUG, use_reloader=APP_USE_RELOADER, host="0.0.0.0")

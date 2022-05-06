@@ -1,7 +1,9 @@
 from engine.create_rindex import create_rm_index
 from engine.create_pindex import create_pt_index
+from engine.create_nindex import create_nt_index
 from engine.redmine_ingestor import begin_ringestor
 from engine.portal_ingestor import begin_pingestor
+from engine.notion_ingestor import begin_ningestor
 from logger.logger import root_logger
 from engine.jobids import *
 
@@ -24,8 +26,12 @@ addWorker(id=CreateRedmineIndex,
           func=create_rm_index)
 addWorker(id=CreatePortalIndex,
           func=create_pt_index)
+addWorker(id=CreateNotionIndex,
+          func=create_nt_index)
 
 addWorker(id=IngestRedmineData,
           func=begin_ringestor)
 addWorker(id=IngestPortalData,
           func=begin_pingestor)
+addWorker(id=IngestNotionData,
+          func=begin_ningestor)
