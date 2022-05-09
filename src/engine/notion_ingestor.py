@@ -29,15 +29,21 @@ def get_body_content(address):
     response = requests.request("GET", url, headers=headers, data=payload)
     data = response.json()
 
-    body_type = data['results'][0]['type']
-    if 'rich_text' in data['results'][0][body_type].keys():
-        if len(data['results'][0][body_type]['rich_text'])==0: 
-            content="내용없음"
-            return content
-        else: content = data['results'][0][body_type]['rich_text'][0]['plain_text']
-        return content
-    else:
-        content = "내용없음"
+    for b in data['results']:
+        content = ""
+        body_type = b['type']
+        if 'rich_text' in b[body_type].keys():
+            if len(b[body_type]['rich_text'])==0: 
+                content+="내용 없음"
+            
+            else: 
+                sub_contents = ""
+                for j in b[body_type]['rich_text']:
+                    sub_contents += j['plain_text']
+                content += sub_contents
+        else:
+            content += "내용 없음"
+        
         return content
 
 # 엘라스틱서치에서 사용될 문서의 고유 아이디를 생성합니다.
@@ -56,12 +62,43 @@ def getIssues():
     }
     response = requests.request("POST", url, headers=headers, data=payload)
     data = response.json()
-    result = pd.DataFrame(data['results'])
-    contents = [get_body_content(address)for address in list(pd.DataFrame(data['results'])['id'])]
-    result['content'] = contents
-    result = result[['title','content','content_type','writer_user','hash_tag','created_on']]
-    result.rename(columns={'title':'subject','content':'description'},inplace=True)
-    return result
+    
+    df = pd.DataFrame()
+    for i in data['results']:
+        
+        basic_content = {}
+        title = ""
+        for t in i['properties']['제목']['title']:
+            title += t['plain_text']
+        
+        address = i['id']
+        contents = get_body_content(address)
+        
+        type_list = ""
+        for ty in i['properties']['유형']['multi_select']:
+            type_list += ty['name']+ ' ' 
+        
+        creator = i['properties']['작성자']['created_by']['name']
+        hash_tags = ""
+        for h in i['properties']['Hash tag']['multi_select']:
+            hash_tags += h['name']+ ' '
+        
+        created_time = i['properties']['작성일자']['created_time']
+
+        basic_content['subject']= title
+        basic_content['description']= contents
+        basic_content['content_type']= type_list
+        basic_content['write_user']= creator
+        basic_content['hash_tag']= hash_tags
+        basic_content['created_on']= created_time
+
+        result = pd.DataFrame([basic_content])
+        df = pd.concat([df,result])
+    # contents = [get_body_content(address)for address in list(pd.DataFrame(data['results'])['id'])]
+    # result['content'] = contents
+    # result = result[['title','content','content_type','writer_user','hash_tag','created_on']]
+    # result.rename(columns={'title':'subject','content':'description'},inplace=True)
+    return df
 
 # 엘라스틱서치에 출력하는 함수입니다. 
 def issueToElasticSearch(df):
@@ -81,11 +118,11 @@ def issueToElasticSearch(df):
             "subject": x[0],
             "description": x[1],
             "content_type": x[2],
-            "writer_user": x[3],
+            "write_user": x[3],
             "hash_tag": x[4],
             "created_on": x[5]}
     }
-        for x in zip(df['subject'], df['description'], df['content_type'], df['writer_user'], df['hash_tag'], df['created_on'])
+        for x in zip(df['subject'], df['description'], df['content_type'], df['write_user'], df['hash_tag'], df['created_on'])
     ]
     helpers.bulk(es, data,raise_on_error=False)
 

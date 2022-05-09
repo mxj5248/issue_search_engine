@@ -39,8 +39,8 @@ def jobElsCollect():
     pushJob(IngestRedmineData)
     pushJob(CreatePortalIndex)
     pushJob(IngestPortalData)
-    # pushJob(CreateNotionIndex)
-    # pushJob(IngestNotionData)
+    pushJob(CreateNotionIndex)
+    pushJob(IngestNotionData)
 
 # sched = BackgroundScheduler()
 # @sched.scheduled_job('interval', hours=1, id='DashWork')

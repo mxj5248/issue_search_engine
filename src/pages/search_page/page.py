@@ -19,6 +19,7 @@ from elasticsearch import Elasticsearch
 
 def search(keyword=None):
     body =  {
+        "size" : 50,
         "query": {
             "multi_match": {
                 "type": "best_fields",
