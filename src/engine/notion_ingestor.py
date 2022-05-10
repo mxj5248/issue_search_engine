@@ -160,7 +160,7 @@ def getIssues():
 
     #         result = pd.DataFrame([basic_content])
     #         df = pd.concat([df,result])
-    # df['id'] = [i for i in range(len(df))]
+    df['id'] = [i for i in range(len(df))]
     return df
 
 # 엘라스틱서치에 출력하는 함수입니다. 
