@@ -38,8 +38,8 @@ def create_rm_index():
                     }
                 },
                 "filter" : { 
-                    "edge_ngram_filter_front": { "type": "edgeNGram", "min_gram": "2", "max_gram": "10", "side": "front" }, 
-                    "edge_ngram_filter_back": { "type": "edgeNGram", "min_gram": "2", "max_gram": "10", "side": "back" },
+                    "edge_ngram_filter_front": { "type": "edge_ngram", "min_gram": "2", "max_gram": "10", "side": "front" }, 
+                    "edge_ngram_filter_back": { "type": "edge_ngram", "min_gram": "2", "max_gram": "10", "side": "back" },
                     # "synonym_filter": { "type": "synonym", "lenient": "true", "synonyms_path":"analysis/synonyms.txt" },
                     "korean_posfilter":{ "type":"nori_part_of_speech", "stoptags":[ "E", "IC", "J", "MAG", "MM", "NA", "NR", "SC", "SE", "SF", "SP", "SSC", "SSO", "SY", "UNA", "VA", "VCN", "VCP", "XPN", "XR", "XSA", "XSN", "XSV" ] },
                     "my_shingle_f": {

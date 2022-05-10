@@ -65,12 +65,11 @@ def getIssues():
     
     df = pd.DataFrame()
     for i in data['results']:
-        
         basic_content = {}
         title = ""
         for t in i['properties']['제목']['title']:
             title += t['plain_text']
-        
+        url = i['url']
         address = i['id']
         contents = get_body_content(address)
         
@@ -91,13 +90,79 @@ def getIssues():
         basic_content['write_user']= creator
         basic_content['hash_tag']= hash_tags
         basic_content['created_on']= created_time
-
+        basic_content['url'] = url
         result = pd.DataFrame([basic_content])
         df = pd.concat([df,result])
-    # contents = [get_body_content(address)for address in list(pd.DataFrame(data['results'])['id'])]
-    # result['content'] = contents
-    # result = result[['title','content','content_type','writer_user','hash_tag','created_on']]
-    # result.rename(columns={'title':'subject','content':'description'},inplace=True)
+    
+
+    if data['has_more']:
+        body = json.dumps({
+            "start_cursor": str(data['next_cursor'])
+        })
+        response = requests.request("POST", url, headers=headers, data=body)
+        data = response.json()
+        
+        for i in data['results']:
+            basic_content = {}
+            title = ""
+            for t in i['properties']['제목']['title']:
+                title += t['plain_text']
+            url = i['url']
+            address = i['id']
+            contents = get_body_content(address)
+            
+            type_list = ""
+            for ty in i['properties']['유형']['multi_select']:
+                type_list += ty['name']+ ' ' 
+            
+            creator = i['properties']['작성자']['created_by']['name']
+            hash_tags = ""
+            for h in i['properties']['Hash tag']['multi_select']:
+                hash_tags += h['name']+ ' '
+            
+            created_time = i['properties']['작성일자']['created_time']
+
+            basic_content['subject']= title
+            basic_content['description']= contents
+            basic_content['content_type']= type_list
+            basic_content['write_user']= creator
+            basic_content['hash_tag']= hash_tags
+            basic_content['created_on']= created_time
+
+            result = pd.DataFrame([basic_content])
+            df = pd.concat([df,result])
+    else:
+        for i in data['results']:
+            basic_content = {}
+            title = ""
+            for t in i['properties']['제목']['title']:
+                title += t['plain_text']
+            
+            address = i['id']
+            contents = get_body_content(address)
+            
+            type_list = ""
+            for ty in i['properties']['유형']['multi_select']:
+                type_list += ty['name']+ ' ' 
+            
+            creator = i['properties']['작성자']['created_by']['name']
+            hash_tags = ""
+            for h in i['properties']['Hash tag']['multi_select']:
+                hash_tags += h['name']+ ' '
+            
+            created_time = i['properties']['작성일자']['created_time']
+
+            basic_content['subject']= title
+            basic_content['description']= contents
+            basic_content['content_type']= type_list
+            basic_content['write_user']= creator
+            basic_content['hash_tag']= hash_tags
+            basic_content['created_on']= created_time
+            basic_content['url'] = url
+
+            result = pd.DataFrame([basic_content])
+            df = pd.concat([df,result])
+    df['id'] = [i for i in range(len(df))]
     return df
 
 # 엘라스틱서치에 출력하는 함수입니다. 
@@ -113,16 +178,18 @@ def issueToElasticSearch(df):
     {
         "_index": "notion",
         "_type": "_doc",
-        "_id": getUniqueIndexId(str(x[0])),
+        "_id": getUniqueIndexId(str(x[1])),
         "_source": {
-            "subject": x[0],
-            "description": x[1],
-            "content_type": x[2],
-            "write_user": x[3],
-            "hash_tag": x[4],
-            "created_on": x[5]}
+            "id": x[0],
+            "subject": x[1],
+            "description": x[2],
+            "content_type": x[3],
+            "write_user": x[4],
+            "hash_tag": x[5],
+            "created_on": x[6],
+            "url":x[7]}
     }
-        for x in zip(df['subject'], df['description'], df['content_type'], df['write_user'], df['hash_tag'], df['created_on'])
+        for x in zip(df['id'],df['subject'], df['description'], df['content_type'], df['write_user'], df['hash_tag'], df['created_on'],df['url'])
     ]
     helpers.bulk(es, data,raise_on_error=False)
 
