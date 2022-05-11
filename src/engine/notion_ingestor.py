@@ -174,7 +174,7 @@ def issueToElasticSearch(df):
     es = get_conn()
     data = [
     {
-        "_index": "notion",
+        "_index": "idx_notion",
         "_type": "_doc",
         "_id": getUniqueIndexId(str(x[1])),
         "_source": {

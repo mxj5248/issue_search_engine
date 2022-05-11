@@ -132,7 +132,7 @@ def issueToElasticSearch(df):
     es = get_conn()
     data = [
     {
-        "_index": "portal",
+        "_index": "idx_portal",
         "_type": "_doc",
         "_id": getUniqueIndexId(str(x[2])),
         "_source": {

@@ -12,7 +12,6 @@ RUN pip install IPython
 RUN pip3 install argon2-cffi
 RUN pip3 install elasticsearch
 RUN pip3 install --upgrade pip wheel
-# RUN pip3 install backports.zoneinfo
 
 # RUN pip install APScheduler==3.6.3
 RUN python3 -m pip install elasticsearch
@@ -22,8 +21,5 @@ RUN python3 -m pip install elasticsearch
 RUN pip3 install --index-url https://nexus.netand.co.kr/repository/pipy/simple --upgrade pip --user
 RUN pip3 install --index-url https://nexus.netand.co.kr/repository/pipy/simple -r ./requirements.txt
 
-## bin nori 설치 하기 
-# // 노리 플러그인 설치
-# bin/elasticsearch-plugin install analysis-nori
 
 

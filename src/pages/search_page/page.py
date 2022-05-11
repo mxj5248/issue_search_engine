@@ -24,7 +24,7 @@ def search(keyword=None):
             "multi_match": {
                 "type": "best_fields",
                 "fields": [
-                    "subject", 
+                    "subject^2", 
                 "description"
             ],
                 "query": keyword,
@@ -49,7 +49,8 @@ def search(keyword=None):
     }
 
     es = Elasticsearch("http://elasticsearch:9200")
-    res = es.search(index=['redmine','portal','notion'],body=body)
+    # res = es.search(index=['idx_redmine','idx_portal','idx_notion'],body=body)
+    res = es.search(index="idx_*",body=body)
     return res
     
 dashboard_layout= html.Div([

@@ -5,7 +5,7 @@ from db.es_pool import get_conn
 
 def create_nt_index():
     # url = "http://localhost:9200/notion"
-    index = "notion"
+    index = "idx_notion"
     delete_index(index)
     es = get_conn()
     payload = {

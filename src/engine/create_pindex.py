@@ -3,7 +3,7 @@ from db.es_util import delete_index
 from db.es_pool import get_conn
 
 def create_pt_index():
-    index = "portal"
+    index = "idx_portal"
     delete_index(index)
     es = get_conn()
     payload = {

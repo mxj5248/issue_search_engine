@@ -3,7 +3,7 @@ from db.es_pool import get_conn
 
 def create_rm_index():
     # try:
-    index = "redmine"
+    index = "idx_redmine"
     delete_index(index)
     es = get_conn()
     # url = "http://localhost:9200/redmine"

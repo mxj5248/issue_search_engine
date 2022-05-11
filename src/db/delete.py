@@ -1,6 +1,6 @@
 import requests
 
-url = "http://localhost:9200/redmine"
+url = "http://localhost:9200/idx_notion"
 
 payload = ""
 headers = {}

@@ -96,7 +96,7 @@ def issueToElasticSearch(df):
     es = get_conn()
     data = [
     {
-        "_index": "redmine",
+        "_index": "idx_redmine",
         "_type": "_doc",
         "_id": getUniqueIndexId(x[5]),
         "_source": {
@@ -112,7 +112,7 @@ def issueToElasticSearch(df):
     }
         for x in zip(df['id'], df['description'], df['tracker_id'], df['project_id'],df['status_id'], df['subject'], df['created_on'], df['updated_on'],df['assigned_to_id'])
     ]
-    helpers.bulk(es, data,raise_on_error=False)
+    helpers.bulk(es, data, raise_on_error=False)
 
     # for issue in issues:
         # id = getUniqueIndexId(issue.subject)
