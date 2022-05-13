@@ -89,77 +89,11 @@ def getIssues():
         basic_content['content_type']= type_list
         basic_content['write_user']= creator
         basic_content['hash_tag']= hash_tags
-        basic_content['created_on']= created_time
+        basic_content['created_on']= str(created_time)
         basic_content['url'] = url
         result = pd.DataFrame([basic_content])
         df = pd.concat([df,result])
-    
 
-    # if data['has_more']:
-    #     # body = json.dumps()
-    #     response = requests.request("POST", url, headers=headers, data= json.dumps({"start_cursor": data['next_cursor']}))
-    #     data = response.json()
-    #     print(data)
-    #     for i in data['results']:
-    #         basic_content = {}
-    #         title = ""
-    #         for t in i['properties']['제목']['title']:
-    #             title += t['plain_text']
-    #         url = str(i['url'])
-    #         address = i['id']
-    #         contents = get_body_content(address)
-            
-    #         type_list = ""
-    #         for ty in i['properties']['유형']['multi_select']:
-    #             type_list += ty['name']+ ' ' 
-            
-    #         creator = i['properties']['작성자']['created_by']['name']
-    #         hash_tags = ""
-    #         for h in i['properties']['Hash tag']['multi_select']:
-    #             hash_tags += h['name']+ ' '
-            
-    #         created_time = i['properties']['작성일자']['created_time']
-
-    #         basic_content['subject']= title
-    #         basic_content['description']= contents
-    #         basic_content['content_type']= type_list
-    #         basic_content['write_user']= creator
-    #         basic_content['hash_tag']= hash_tags
-    #         basic_content['created_on']= created_time
-
-    #         result = pd.DataFrame([basic_content])
-    #         df = pd.concat([df,result])
-    # else:
-    #     for i in data['results']:
-    #         basic_content = {}
-    #         title = ""
-    #         for t in i['properties']['제목']['title']:
-    #             title += t['plain_text']
-            
-    #         address = i['id']
-    #         contents = get_body_content(address)
-            
-    #         type_list = ""
-    #         for ty in i['properties']['유형']['multi_select']:
-    #             type_list += ty['name']+ ' ' 
-            
-    #         creator = i['properties']['작성자']['created_by']['name']
-    #         hash_tags = ""
-    #         for h in i['properties']['Hash tag']['multi_select']:
-    #             hash_tags += h['name']+ ' '
-            
-    #         created_time = i['properties']['작성일자']['created_time']
-
-    #         basic_content['subject']= title
-    #         basic_content['description']= contents
-    #         basic_content['content_type']= type_list
-    #         basic_content['write_user']= creator
-    #         basic_content['hash_tag']= hash_tags
-    #         basic_content['created_on']= created_time
-    #         basic_content['url'] = url
-
-    #         result = pd.DataFrame([basic_content])
-    #         df = pd.concat([df,result])
     df['id'] = [i for i in range(len(df))]
     return df
 
@@ -189,7 +123,10 @@ def issueToElasticSearch(df):
     }
         for x in zip(df['id'], df['subject'], df['description'], df['content_type'], df['write_user'], df['hash_tag'], df['created_on'],df['url'])
     ]
-    helpers.bulk(es, data,raise_on_error=False)
+    helpers.bulk(es, data)
+    success, errors = helpers.bulk(es, data)
+
+    print(success, errors)
 
 def begin_ningestor():
     p = getIssues()

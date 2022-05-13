@@ -54,7 +54,8 @@ def create_nt_index():
                         "type": "text"
                     },
                 "description": { #업무내용 
-                        "type": "text"
+                    "type": "text",
+                    "analyzer": "korean_nori_analyzer",
                     },
                 "content_type": { # 유형
                     "type":"text"
@@ -66,7 +67,7 @@ def create_nt_index():
                     "type":"text"
                 },
                 "created_on": { # 생성시점 
-                        "type": "date"
+                    "type": "date","format": "YYYY-MM-DD'T'HH:mm:ssZ"
                 },
             }
         }

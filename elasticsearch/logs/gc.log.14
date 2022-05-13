@@ -1,24 +1,24 @@
-[2022-05-10T01:30:24.850+0000][328][gc] Using G1
-[2022-05-10T01:30:24.853+0000][328][gc,init] Version: 17.0.2+8 (release)
-[2022-05-10T01:30:24.854+0000][328][gc,init] CPUs: 5 total, 5 available
-[2022-05-10T01:30:24.854+0000][328][gc,init] Memory: 7851M
-[2022-05-10T01:30:24.855+0000][328][gc,init] Large Page Support: Disabled
-[2022-05-10T01:30:24.855+0000][328][gc,init] NUMA Support: Disabled
-[2022-05-10T01:30:24.856+0000][328][gc,init] Compressed Oops: Enabled (32-bit)
-[2022-05-10T01:30:24.857+0000][328][gc,init] Heap Region Size: 1M
-[2022-05-10T01:30:24.857+0000][328][gc,init] Heap Min Capacity: 512M
-[2022-05-10T01:30:24.858+0000][328][gc,init] Heap Initial Capacity: 512M
-[2022-05-10T01:30:24.859+0000][328][gc,init] Heap Max Capacity: 512M
-[2022-05-10T01:30:24.860+0000][328][gc,init] Pre-touch: Disabled
-[2022-05-10T01:30:24.861+0000][328][gc,init] Parallel Workers: 5
-[2022-05-10T01:30:24.861+0000][328][gc,init] Concurrent Workers: 1
-[2022-05-10T01:30:24.862+0000][328][gc,init] Concurrent Refinement Workers: 5
-[2022-05-10T01:30:24.862+0000][328][gc,init] Periodic GC: Disabled
-[2022-05-10T01:30:24.863+0000][328][gc,metaspace] CDS archive(s) not mapped
-[2022-05-10T01:30:24.863+0000][328][gc,metaspace] Compressed class space mapped at: 0x0000000100000000-0x0000000140000000, reserved size: 1073741824
-[2022-05-10T01:30:24.864+0000][328][gc,metaspace] Narrow klass base: 0x0000000000000000, Narrow klass shift: 3, Narrow klass range: 0x140000000
-[2022-05-10T01:30:24.902+0000][328][gc,heap,exit] Heap
-[2022-05-10T01:30:24.903+0000][328][gc,heap,exit]  garbage-first heap   total 524288K, used 2048K [0x00000000e0000000, 0x0000000100000000)
-[2022-05-10T01:30:24.904+0000][328][gc,heap,exit]   region size 1024K, 2 young (2048K), 0 survivors (0K)
-[2022-05-10T01:30:24.906+0000][328][gc,heap,exit]  Metaspace       used 3478K, committed 3520K, reserved 1056768K
-[2022-05-10T01:30:24.907+0000][328][gc,heap,exit]   class space    used 278K, committed 320K, reserved 1048576K
+[2022-05-13T02:15:31.491+0000][329][gc] Using G1
+[2022-05-13T02:15:31.495+0000][329][gc,init] Version: 17.0.2+8 (release)
+[2022-05-13T02:15:31.495+0000][329][gc,init] CPUs: 12 total, 12 available
+[2022-05-13T02:15:31.495+0000][329][gc,init] Memory: 25532M
+[2022-05-13T02:15:31.496+0000][329][gc,init] Large Page Support: Disabled
+[2022-05-13T02:15:31.496+0000][329][gc,init] NUMA Support: Disabled
+[2022-05-13T02:15:31.496+0000][329][gc,init] Compressed Oops: Enabled (32-bit)
+[2022-05-13T02:15:31.496+0000][329][gc,init] Heap Region Size: 1M
+[2022-05-13T02:15:31.497+0000][329][gc,init] Heap Min Capacity: 512M
+[2022-05-13T02:15:31.497+0000][329][gc,init] Heap Initial Capacity: 512M
+[2022-05-13T02:15:31.497+0000][329][gc,init] Heap Max Capacity: 512M
+[2022-05-13T02:15:31.497+0000][329][gc,init] Pre-touch: Disabled
+[2022-05-13T02:15:31.498+0000][329][gc,init] Parallel Workers: 10
+[2022-05-13T02:15:31.498+0000][329][gc,init] Concurrent Workers: 3
+[2022-05-13T02:15:31.498+0000][329][gc,init] Concurrent Refinement Workers: 10
+[2022-05-13T02:15:31.498+0000][329][gc,init] Periodic GC: Disabled
+[2022-05-13T02:15:31.498+0000][329][gc,metaspace] CDS archive(s) not mapped
+[2022-05-13T02:15:31.499+0000][329][gc,metaspace] Compressed class space mapped at: 0x0000000100000000-0x0000000140000000, reserved size: 1073741824
+[2022-05-13T02:15:31.499+0000][329][gc,metaspace] Narrow klass base: 0x0000000000000000, Narrow klass shift: 3, Narrow klass range: 0x140000000
+[2022-05-13T02:15:31.575+0000][329][gc,heap,exit] Heap
+[2022-05-13T02:15:31.575+0000][329][gc,heap,exit]  garbage-first heap   total 524288K, used 2048K [0x00000000e0000000, 0x0000000100000000)
+[2022-05-13T02:15:31.575+0000][329][gc,heap,exit]   region size 1024K, 2 young (2048K), 0 survivors (0K)
+[2022-05-13T02:15:31.576+0000][329][gc,heap,exit]  Metaspace       used 3481K, committed 3584K, reserved 1056768K
+[2022-05-13T02:15:31.576+0000][329][gc,heap,exit]   class space    used 278K, committed 320K, reserved 1048576K

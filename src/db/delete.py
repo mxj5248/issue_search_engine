@@ -1,6 +1,6 @@
 import requests
 
-url = "http://localhost:9200/idx_notion"
+url = "http://localhost:9200/idx_*"
 
 payload = ""
 headers = {}

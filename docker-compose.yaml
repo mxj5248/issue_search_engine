@@ -8,12 +8,16 @@ services:
     command: >
       /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-nori 
       || ./bin/elasticsearch-plugin install analysis-nori; 
+      /usr/local/bin/docker-entrypoint.sh;"
+      /bin/sh -c "./bin/elasticsearch-plugin list | grep -q ingest-geoip
+      || .bin/elasticsearch-plugin install ingest-geoip; 
       /usr/local/bin/docker-entrypoint.sh"
     environment:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
     ulimits:
       memlock:
         soft: -1
@@ -22,6 +26,8 @@ services:
       - ./elasticsearch/data:/usr/share/elasticsearch/data
       - ./elasticsearch/logs:/usr/share/elasticsearch/logs
       - ./elasticsearch/analysis:/usr/share/elasticsearch/config/analysis
+      - ./elasticsearch/backup:/usr/share/elasticsearch/backup
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     networks:
       - flowermall
     ports:
@@ -35,9 +41,10 @@ services:
   #   environment:
   #     ELASTICSEARCH_URL: http://elasticsearch:9200
   #     ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+  #   privileged: true
   #   networks:
   #     - flowermall
-      
+
   db: 
     image: mariadb
     restart: always

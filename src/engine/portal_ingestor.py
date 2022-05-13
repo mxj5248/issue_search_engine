@@ -50,63 +50,54 @@ def getIssues():
     conn = get_conn()
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     query = '''
-    SELECT * FROM 
-    (SELECT
-    IDT.UID AS uid,
-    IDT.ISSUE_DATA_NUM AS issue_data_num,
-    NIDT.TITLE AS title,
-    F.VALUE AS content,
-    IF(DIT.NAME IS NULL OR DIT.NAME = '' , DIT2.NAME, DIT.NAME) AS issue_type,
-    DST.NAME AS site_name,
-    DIGT.TITLE as biz_title,
-    DUT.NAME AS issue_manage_user,
-    IDT.REG_DT AS create_on
-    FROM
-    NADPORTAL_IDX_DEFAULT_TB NIDT 
-    INNER JOIN ISSUE_DATA_TB IDT ON   NIDT.ISSUE_DATA_UID = IDT.UID
-    INNER JOIN DEF_SITE_TB DST ON IDT.SITE_UID = DST.UID
-    INNER JOIN BIZ_INFO_TB BIT ON IDT.BIZ_UID = BIT.UID
-    INNER JOIN DEF_ISSUE_GROUP_TB DIGT ON DIGT.UID = BIT.ISSUE_GROUP_UID
-    LEFT OUTER JOIN DEF_ISSUE_TB DIT ON IDT.ISSUE_UID = DIT.UID
-    LEFT OUTER JOIN DEF_ISSUE_TB DIT2 ON IDT.ISSUE_TEMPLATE_UID = DIT2.UID
-    INNER JOIN (
-            SELECT * FROM (
-                SELECT 
-                        DIT.UID as uid,      
-                        DIT.NAME as name,
-                        DIT.ISSUE_ID as issueId
-                    FROM 
-                        DEF_ISSUE_TB DIT LEFT OUTER JOIN DEF_ISSUE_GROUP_TB DIGT
-                        ON DIT.ISSUE_GROUP_UID = DIGT.UID
-                        LEFT OUTER JOIN DEF_ISSUE_TB DIT2
-                        ON DIT.TEMPLATE_UID = DIT2.UID
-                    WHERE
-                        DIT.PARENT_UID IN (SELECT UID FROM DEF_ISSUE_TB DIT3 WHERE DIT3.NAME IN ('SR','구축'))
-                        AND DIT.USE_GB = 'DATA'
-                UNION ALL 
-                SELECT 
-                        UID, 
-                        NAME, 
-                        ISSUE_ID 
-                    FROM 
-                        DEF_ISSUE_TB dit4 
-                    WHERE 
-                        NAME IN ('SR', '라이선스', '구축')
-                ) A 
-                GROUP BY UID, NAME, ISSUEID
-            ) T ON IDT.ISSUE_UID = T.UID
-    LEFT OUTER JOIN DEF_USER_TB DUT ON NIDT.ISSUE_MANAGE_USER = DUT.UID 
-    LEFT OUTER JOIN (
-                SELECT 
-                        IFDT.ISSUE_DATA_UID, 
-                        IFDT.VALUE 
-                FROM 
-                    ISSUE_FIELD_DATA_TB IFDT LEFT OUTER JOIN DEF_FIELD_TB DFT ON IFDT.FIELD_UID = DFT.UID 
-                WHERE 
-                    DFT.FIELD_KEY = 'CONTENT'
-                ) F ON NIDT.ISSUE_DATA_UID = F.ISSUE_DATA_UID
-                ORDER BY content DESC LIMIT 18446744073709551615
-                ) A GROUP BY content
+    SELECT 
+        IDT.UID AS uid, 
+        IDT.ISSUE_DATA_NUM AS issue_data_num, 
+        NIDT.TITLE AS title, 
+        IFDT.VALUE AS content, 
+        B.ISSUE_NAME AS issue_type, 
+        DST.NAME AS site_name, 
+        DIGT2.TITLE AS biz_title, 
+        DUT.NAME AS issue_manage_user, 
+        IDT.REG_DT AS create_on 
+    FROM 
+        ISSUE_DATA_TB IDT 
+        INNER JOIN (
+                            SELECT 
+                                DIT.UID AS ISSUE_UID, 
+                                DIT.NAME AS ISSUE_NAME, 
+                                DIT.ISSUE_ID AS ISSUE_ID 
+                            FROM 
+                                DEF_ISSUE_TB DIT LEFT OUTER JOIN DEF_ISSUE_GROUP_TB DIGT 
+                                ON DIT.ISSUE_GROUP_UID = DIGT.UID 
+                                LEFT OUTER JOIN DEF_ISSUE_TB DIT2 
+                                ON DIT.TEMPLATE_UID = DIT2.UID 
+                                RIGHT OUTER JOIN (
+                                                    SELECT 
+                                                            DIT.UID AS ISSUE_UID 
+                                                        FROM 
+                                                            DEF_ISSUE_TB DIT 
+                                                            RIGHT OUTER JOIN (
+                                                                            SELECT 
+                                                                                DIT2.UID 
+                                                                            FROM 
+                                                                                DEF_ISSUE_TB DIT2 
+                                                                            WHERE 
+                                                                                DIT2.ISSUE_ID IN ('SR','BUILD') 
+                                                                                AND DIT2.TYPE = 'TEMPLATE' 
+                                                                            ) DIT3 ON DIT.TEMPLATE_UID = DIT3.UID 
+                                                ) A ON (DIT.PARENT_UID = A.ISSUE_UID OR DIT.UID = A.ISSUE_UID) 
+                            WHERE 
+                                DIT.USE_GB = 'DATA' 
+                        ) B ON IDT.ISSUE_UID = B.ISSUE_UID 
+        LEFT OUTER JOIN NADPORTAL_IDX_DEFAULT_TB NIDT ON IDT.UID = NIDT.ISSUE_DATA_UID 
+        LEFT OUTER JOIN DEF_SITE_TB DST ON DST.UID = IDT.SITE_UID 
+        LEFT OUTER JOIN DEF_USER_TB DUT ON DUT.UID = NIDT.ISSUE_MANAGE_USER 
+        LEFT OUTER JOIN BIZ_INFO_TB BIT2 ON BIT2.UID = IDT.BIZ_UID 
+        LEFT OUTER JOIN DEF_ISSUE_GROUP_TB DIGT2 ON DIGT2.UID = BIT2.ISSUE_GROUP_UID 
+        LEFT OUTER JOIN ISSUE_FIELD_DATA_TB IFDT ON IDT.UID = IFDT.ISSUE_DATA_UID 
+        LEFT OUTER JOIN DEF_FIELD_TB DFT ON IFDT.FIELD_UID = DFT.UID 
+    WHERE DFT.FIELD_KEY = 'CONTENT'
     '''
     cursor.execute(query)
     data = cursor.fetchall()

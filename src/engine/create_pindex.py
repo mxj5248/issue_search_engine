@@ -58,7 +58,8 @@ def create_pt_index():
                     "type": "text"
                 },
                 "description": { #업무내용 
-                    "type": "text"
+                    "type": "text",
+                    "analyzer": "korean_nori_analyzer",
                 },
                 "issue_type": { # 이슈 유형
                     "type": "text"
