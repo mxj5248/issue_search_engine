@@ -4,19 +4,8 @@ import pandas as pd
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 import hashlib
+from elasticsearch.helpers import parallel_bulk
 
-# 이슈를 표현하는 class 입니다.
-class ProductIssue(object):
-  """
-    Represents semantic data for a single product post
-  """
-  def __init__(self, subject, description, content_type, write_user, hash_tag, created_on):
-    self.subject = subject
-    self.description = description
-    self.content_type = content_type
-    self.write_user = write_user
-    self.hash_tag = hash_tag
-    self.created_on= created_on
 
 def get_body_content(address):
     url = "https://api.notion.com/v1/blocks/"+address+"/children"
@@ -35,7 +24,6 @@ def get_body_content(address):
         if 'rich_text' in b[body_type].keys():
             if len(b[body_type]['rich_text'])==0: 
                 content+="내용 없음"
-            
             else: 
                 sub_contents = ""
                 for j in b[body_type]['rich_text']:
@@ -85,16 +73,18 @@ def getIssues():
         created_time = i['properties']['작성일자']['created_time']
 
         basic_content['subject']= title
-        basic_content['description']= contents
-        basic_content['content_type']= type_list
-        basic_content['write_user']= creator
-        basic_content['hash_tag']= hash_tags
-        basic_content['created_on']= str(created_time)
-        basic_content['url'] = url
+        # basic_content['description']= contents
+        # basic_content['content_type']= type_list
+        # basic_content['write_user']= creator
+        # basic_content['hash_tag']= hash_tags
+        basic_content['created_on']= created_time
+        # basic_content['url'] = url
         result = pd.DataFrame([basic_content])
         df = pd.concat([df,result])
 
-    df['id'] = [i for i in range(len(df))]
+    # df['id'] = [i for i in range(len(df))]
+    df['subject'] = df['subject'].astype("string")
+    df.fillna('none')
     return df
 
 # 엘라스틱서치에 출력하는 함수입니다. 
@@ -106,28 +96,46 @@ def issueToElasticSearch(df):
         es = Elasticsearch(f'{url}:{port}')
         return es
     es = get_conn()
-    data = [
-    {
-        "_index": "idx_notion",
-        "_type": "_doc",
-        "_id": getUniqueIndexId(str(x[1])),
-        "_source": {
-            "id": x[0],
-            "subject": x[1],
-            "description": x[2],
-            "content_type": x[3],
-            "write_user": x[4],
-            "hash_tag": x[5],
-            "created_on": x[6],
-            "url":x[7]}
-    }
-        for x in zip(df['id'], df['subject'], df['description'], df['content_type'], df['write_user'], df['hash_tag'], df['created_on'],df['url'])
-    ]
-    helpers.bulk(es, data)
-    success, errors = helpers.bulk(es, data)
+    for n,i in enumerate(df.to_dict('records')):
+        doc = {
+            # "id":i['id'],
+        "subject":i["subject"],
+        # "description":i['description'],
+        # "content_type":i['content_type'],
+        # "write_user":i["write_user"],
+        # "hash_tag":i["hash_tag"],
+        "created_on":i["created_on"],
+        # "url":i["url"]}
+        }
+        res = es.index(index="idx_notion", id=n+1,body=doc,refresh= "wait_for")
+        print (res['result'])
+    # data = []
+    # for x in zip(df['subject'],df['created_on']):
+    #     data_chunk = {
+    #     "_index": "idx_notion",
+    #     "_type": "_doc",
+    #     "_id": getUniqueIndexId(x[0]),
+    #     "_source": {
+    #         "subject": x[0],
+    #         "created_on": x[1]
+    #         }
+    #     }
+    #     data.append(data_chunk)
+    #     print(data_chunk)
+    # response = helpers.streaming_bulk(es, index="idx_notion",actions=data, initial_backoff=600)
+    # # success, errors = helpers.bulk(es, data)
+    # for success, info in response:
+    #     if not success: print('Doc failed', info)
 
-    print(success, errors)
+
 
 def begin_ningestor():
     p = getIssues()
     issueToElasticSearch(p)
+p = getIssues()
+issueToElasticSearch(p)
+# p.fillna('none')
+# print(p.to_dict('records'))
+# print(p.info())
+# print(p.iloc[0])
+

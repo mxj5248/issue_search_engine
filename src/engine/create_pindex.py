@@ -1,4 +1,3 @@
-import time
 from db.es_util import delete_index
 from db.es_pool import get_conn
 
@@ -54,7 +53,7 @@ def create_pt_index():
                 "issue_data_num": { #이슈번호
                     "type": "long"
                 },
-                "title": { #제목
+                "subject": { #제목
                     "type": "text"
                 },
                 "description": { #업무내용 
@@ -84,13 +83,3 @@ def create_pt_index():
     }
 
     es.indices.create(index=index, headers=headers, body=payload)
-        # session = requests.Session()
-        # retry = Retry(connect=3, backoff_factor=1)
-        # adapter = HTTPAdapter(max_retries=retry)
-        # session.mount('http://', adapter)
-        # session.mount('https://', adapter)
-
-        # response = session.request("PUT", url, headers=headers, data=payload, verify=False)
-
-        # response = requests.request("PUT", url, headers=headers, data=payload, verify=False)
-        # print(response.text)
