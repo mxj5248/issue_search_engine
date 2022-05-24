@@ -437,34 +437,34 @@ def issueToElasticSearch(df):
 
 def begin_rspingestor():
     # p = getIssues()
-    df = pd.DataFrame()
-    with open('docs.pickle', 'rb') as f:
-        data = pickle.load(f)
-        df_docs = pd.DataFrame(data)
-        df = pd.concat([df,df_docs])
-    # with open('pdfs.pickle', 'rb') as ff:
-    #     dataf = pickle.load(ff)
-    #     df_pdfs = pd.DataFrame(dataf)
-    #     df = pd.concat([df,df_pdfs])
-    with open('txts.pickle', 'rb') as fff:
-        datat = pickle.load(fff)
-        df_txts = pd.DataFrame(datat)
-        df = pd.concat([df,df_txts])
-    with open('ppt.pickle', 'rb') as ffff:
-        dataff = pickle.load(ffff)
-        df_ppts = pd.DataFrame(dataff)
-        df = pd.concat([df,df_ppts])
-    with open('excels.pickle', 'rb') as e:
-        datae = pickle.load(e)
-        df_e = pd.DataFrame(datae)
-        df = pd.concat([df,df_e])
+    # df = pd.DataFrame()
+    # with open('docs.pickle', 'rb') as f:
+    #     data = pickle.load(f)
+    #     df_docs = pd.DataFrame(data)
+    #     df = pd.concat([df,df_docs])
+    # # with open('pdfs.pickle', 'rb') as ff:
+    # #     dataf = pickle.load(ff)
+    # #     df_pdfs = pd.DataFrame(dataf)
+    # #     df = pd.concat([df,df_pdfs])
+    # with open('txts.pickle', 'rb') as fff:
+    #     datat = pickle.load(fff)
+    #     df_txts = pd.DataFrame(datat)
+    #     df = pd.concat([df,df_txts])
+    # with open('ppt.pickle', 'rb') as ffff:
+    #     dataff = pickle.load(ffff)
+    #     df_ppts = pd.DataFrame(dataff)
+    #     df = pd.concat([df,df_ppts])
+    # with open('excels.pickle', 'rb') as e:
+    #     datae = pickle.load(e)
+    #     df_e = pd.DataFrame(datae)
+    #     df = pd.concat([df,df_e])
 
 
-    p = df[['id','container_id','filename','description','created_on','rdescription','rsubjet']]
-    p.rename(columns={'filename':'subject'},inplace=True)
-    
-    for idx in range(int(len(p)/50)):
-        slice_data = p.iloc[idx*50:(idx+1)*50,:]
-        issueToElasticSearch(slice_data)
-        time.sleep(30)
-begin_rspingestor()
+    # p = df[['id','container_id','filename','description','created_on','rdescription','rsubjet']]
+    # p.rename(columns={'filename':'subject'},inplace=True)
+    print("")
+    # for idx in range(int(len(p)/50)):
+    #     slice_data = p.iloc[idx*50:(idx+1)*50,:]
+    #     issueToElasticSearch(slice_data)
+    #     time.sleep(30)
+# begin_rspingestor()

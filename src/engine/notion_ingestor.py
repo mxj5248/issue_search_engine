@@ -4,6 +4,7 @@ import pandas as pd
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 import hashlib
+from elasticsearch.helpers import parallel_bulk
 
 
 def get_body_content(address):
@@ -150,7 +151,7 @@ def issueToElasticSearch(df):
     es = get_conn()
     for n,i in enumerate(df.to_dict('records')):
         doc = {
-            "id":i['id'],
+        "id":i['id'],
         "subject":i["subject"],
         "description":i['description'],
         "content_type":i['content_type'],
@@ -160,23 +161,7 @@ def issueToElasticSearch(df):
         "url":i["url"]}
         res = es.index(index="idx_notion", id=n+1,body=doc, refresh= "wait_for")
         print (str(n)+ res['result'])
-    # data = []
-    # for x in zip(df['subject'],df['created_on']):
-    #     data_chunk = {
-    #     "_index": "idx_notion",
-    #     "_type": "_doc",
-    #     "_id": getUniqueIndexId(x[0]),
-    #     "_source": {
-    #         "subject": x[0],
-    #         "created_on": x[1]
-    #         }
-    #     }
-    #     data.append(data_chunk)
-    #     print(data_chunk)
-    # response = helpers.streaming_bulk(es, index="idx_notion",actions=data, initial_backoff=600)
-    # # success, errors = helpers.bulk(es, data)
-    # for success, info in response:
-    #     if not success: print('Doc failed', info)
+    
 
 def begin_ningestor():
     p = getIssues()

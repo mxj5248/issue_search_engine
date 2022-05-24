@@ -7,10 +7,6 @@ def create_nt_index():
     es = get_conn()
     payload = {
         "settings": {
-            "index": {
-                "number_of_shards": 1,
-                "number_of_replicas": 1
-            },
             "analysis":{
                 "analyzer":{
                     "korean_nori_analyzer":{
