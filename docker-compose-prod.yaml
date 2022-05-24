@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    image: nexusrepo.netand.co.kr/elasticsearch_with_nori:7.17.2
+    user: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./containers/dash/datastore:/usr/share/elasticsearch/containers/datastore
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/logs:/usr/share/elasticsearch/logs
+      - ./elasticsearch/analysis:/usr/share/elasticsearch/config/analysis
+      - ./elasticsearch/backup:/usr/share/elasticsearch/backup
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    networks:
+      - flowermall
+    ports:
+      - 9200:9200
+
+networks:
+    flowermall:
+      driver: bridge
+      name: flowermall
+

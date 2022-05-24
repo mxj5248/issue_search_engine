@@ -3,7 +3,7 @@ services:
   elasticsearch:
     container_name: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.2
-    # image: nexusrepo.netand.co.kr/elasticsearch:7.17.2
+    # image: nexusrepo.netand.co.kr/elasticsearch_with_nori:7.17.2
     user: elasticsearch
     command: >
       /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-nori 
@@ -23,6 +23,7 @@ services:
         soft: -1
         hard: -1
     volumes:
+      - ./containers/dash/datastore:/usr/share/elasticsearch/containers/datastore
       - ./elasticsearch/data:/usr/share/elasticsearch/data
       - ./elasticsearch/logs:/usr/share/elasticsearch/logs
       - ./elasticsearch/analysis:/usr/share/elasticsearch/config/analysis
@@ -32,18 +33,6 @@ services:
       - flowermall
     ports:
       - 9200:9200
-
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.17.2
-  #   container_name: kibana
-  #   ports:
-  #     - 5601:5601
-  #   environment:
-  #     ELASTICSEARCH_URL: http://elasticsearch:9200
-  #     ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-  #   privileged: true
-  #   networks:
-  #     - flowermall
 
   db: 
     image: mariadb
@@ -81,9 +70,9 @@ services:
     networks:
       - flowermall
     command: ["python", "index.py"]
-
+  
 networks:
-  flowermall:
-    driver: bridge
-    name: flowermall
+    flowermall:
+      driver: bridge
+      name: flowermall
 

@@ -5,6 +5,9 @@ ingest.geoip.downloader.enabled: false
 cluster.name: "docker-cluster"
 network.host: 0.0.0.0
 path.repo : ["backup"]
+
+thread_pool.search.queue_size: 1000
+thread_pool.write.queue_size: 10000
 ## X-Pack settings
 ## see https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-xpack.html
 #

@@ -1,6 +1,6 @@
 import requests
 
-url = "http://localhost:9200/idx_*"
+url = "http://localhost:9200/idx_redminesp"
 
 payload = ""
 headers = {}

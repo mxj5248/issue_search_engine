@@ -1,10 +1,7 @@
-import requests
-import json
 from db.es_util import delete_index
 from db.es_pool import get_conn
 
 def create_nt_index():
-    # url = "http://localhost:9200/notion"
     index = "idx_notion"
     delete_index(index)
     es = get_conn()
@@ -50,24 +47,30 @@ def create_nt_index():
         },
         "mappings": {
             "properties": {
+                "id":{
+                    "type": "long",
+                },
                 "subject": { #제목
-                        "type": "text"
-                    },
+                    "type": "text",
+                },
                 "description": { #업무내용 
                     "type": "text",
                     "analyzer": "korean_nori_analyzer",
-                    },
+                },
                 "content_type": { # 유형
-                    "type":"text"
+                    "type":"text",
                 },
                 "write_user": { # 작성자
-                    "type":"text"
+                    "type":"text",
                 },
                 "hash_tag": { # 해시태그
-                    "type":"text"
+                    "type":"text",
                 },
                 "created_on": { # 생성시점 
-                    "type": "date","format": "YYYY-MM-DD'T'HH:mm:ssZ"
+                    "type": "date",
+                },
+                "url": { # 생성시점 
+                    "type": "text",
                 },
             }
         }

@@ -19,33 +19,14 @@ from elasticsearch import Elasticsearch
 
 def search(keyword=None):
     body =  {
-        "size" : 50,
+        "size" : 100,
         "query": {
             "multi_match": {
                 "type": "best_fields",
-                "fields": [
-                    "subject^2", 
-                "description"
-            ],
                 "query": keyword,
+                "fields": ["subject", "description"]  
             }
         },
-    # }
-        # "highlight": {
-        #     "fragment_size": 150,
-        #     "fields": {
-        #         "subject": {},
-        #         "description": {}
-        #     }
-        # },
-        # "highlight" : {
-        #     "type": "unified",
-        #     "require_field_match": False,
-        #     "number_of_fragments": 0,
-        #     "fields" : {
-        #         "*" : { "pre_tags" : ["<mark>"], "post_tags" : ["</mark>"] }
-        #     }
-        # }
     }
 
     es = Elasticsearch("http://elasticsearch:9200")

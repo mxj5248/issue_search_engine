@@ -2,16 +2,13 @@ from util.querystore import *
 from datetime import datetime
 import datetime
 import hashlib
-import json
-import requests
 import pymysql 
 import os
-from pymysqlpool.pool import Pool
 from abc import *
 import pandas as pd
-import time
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
+
 # 이슈를 표현하는 class 입니다.
 class ProductIssue(object):
   """
@@ -27,6 +24,7 @@ class ProductIssue(object):
     self.created_on= created_on
     self.updated_on = updated_on
     self.assigned_to_id = assigned_to_id
+
 
 REDMINE_DB_PORT = int(os.getenv("REDMINE_DB_PORT"))
 REDMINE_DB_DATABASE = os.getenv("REDMINE_DB_DATABASE")
@@ -61,7 +59,6 @@ def getUniqueIndexId(pri):
 def getIssues():
     conn = get_conn()
     cursor = conn.cursor(pymysql.cursors.DictCursor)
-    # query = redmine_common_query_list['issues_d'] 
     query = "SELECT id, description, tracker_id, project_id, status_id, subject, created_on, updated_on, assigned_to_id FROM redmine.issues i WHERE i.created_on >= '2020-01-01' AND i.project_id in (77,79)"
     cursor.execute(query)
     data = cursor.fetchall()
@@ -71,22 +68,12 @@ def getIssues():
         print("Issue id {} found. created on: {}".format(value['id'],value['created_on']))
         issue = ProductIssue(value['id'], value['description'], value['tracker_id'], value['project_id'],value['status_id'], value['subject'], value['created_on'], value['updated_on'],value['assigned_to_id'])
         issue_list.append(issue)
-
-
-    # for (id, description, tracker_id, project_id, status_id, subject, created_on, updated_on) in cursor:
-    #     print("Issue id {} found. created on: {}".format(id,created_on))
-    #     issue = ProductIssue(id, description,tracker_id, project_id, status_id, subject, created_on, updated_on)
-    #     issue_list.append(issue)
-
+    
     release(conn)
-    # return issue_list
     return result
 
-# 엘라스틱서치에 출력하는 함수입니다. 
+#엘라스틱서치에 출력하는 함수입니다. 
 def issueToElasticSearch(df):
-    putUrlPrefix = 'http://localhost:9200/redmine/_doc/'
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    # es = Elasticsearch(hosts="http://elasticsearch", port=9200)
     url = "http://elasticsearch"
     port = "9200"
 
@@ -113,14 +100,6 @@ def issueToElasticSearch(df):
         for x in zip(df['id'], df['description'], df['tracker_id'], df['project_id'],df['status_id'], df['subject'], df['created_on'], df['updated_on'],df['assigned_to_id'])
     ]
     helpers.bulk(es, data, raise_on_error=False)
-
-    # for issue in issues:
-        # id = getUniqueIndexId(issue.subject)
-        # r = requests.put(putUrlPrefix + id, data=json.dumps(issue.__dict__,indent=4, sort_keys=True, default=json_default), headers=headers)
-        # if r.status_code >= 400:
-        #    print("There is an error writing to elasticsearch")
-        #    print(r.status_code)
-        #    print(r.json())
 
 
 def begin_ringestor():
