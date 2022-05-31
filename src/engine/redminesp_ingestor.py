@@ -196,10 +196,13 @@ def getIssues():
     result = result[result['container_type']=="Issue"]
     
     def get_r_contents(rid):
-        r_query = "SELECT id, description, project_id, subject, created_on FROM redmine.issues i WHERE i.created_on >= '2020-10-01' AND i.project_id in (77,79) AND i.id = " + str(rid)
+        conn = get_conn()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        r_query = "SELECT id, description, project_id, subject, created_on FROM redmine.issues i WHERE i.id = " + str(rid)
         cursor.execute(r_query)
         r_data = cursor.fetchall()
         r_result = pd.DataFrame(r_data,columns=['id', 'description', 'project_id', 'subject', 'created_on'])
+        release(conn)
         return r_result 
 
     redmine = Redmine("https://redmine.netand.co.kr",username='mxj5248',password='Tyler1031!')
@@ -219,17 +222,23 @@ def getIssues():
     #             enc_name = encode_text(file_name)
     #             url = prefix_url + file_id + '/' + enc_name
     #             redmine.download(url,savepath='/datastore',filename = file_name)
+                
+    #             r_result = get_r_contents(int(value['container_id']))
+    #             rdes_powers.append(r_result['description'])
+    #             rsubj_powers.append(r_result['subject'])
+                
     #             content = get_ppt_text('/datastore/'+file_name) 
     #             des_powers.append(content)
     #             powers.append(value['id'])
 
-    #             r_result = get_r_contents(value['container_id'])
-                
+    #             # r_result = get_r_contents(value['container_id'])
+    #             # rdes_powers.append(r_result['description'])
+    #             # rsubj_powers.append(r_result['subject'])
+
+    #         except Exception as e:
+    #             r_result = get_r_contents(int(value['container_id']))
     #             rdes_powers.append(r_result['description'])
     #             rsubj_powers.append(r_result['subject'])
-
-            
-    #         except  Exception as e:
     #             pass
 
     # result_p = result[result['id'].isin(powers)]
@@ -258,7 +267,7 @@ def getIssues():
     #             redmine.download(url,savepath='/datastore',filename = file_name)
 
     #             pdfs.append(value['id'])
-    #             r_result = get_r_contents(value['container_id'])
+    #             r_result = get_r_contents(int(value['container_id']))
     #             rdes_pdfs.append(r_result['description'])
     #             rsubj_pdfs.append(r_result['subject'])
 
@@ -266,99 +275,112 @@ def getIssues():
     #             des_pdfs.append(content)
             
     #         except Exception as e:
+    #             des_pdfs.append("파일을 확인해 주세요.")
+    #             r_result = get_r_contents(int(value['container_id']))
+    #             rdes_pdfs.append(r_result['description'])
+    #             rsubj_pdfs.append(r_result['subject'])
+    #             rdes_pdfs.append("파일을 확인해 주세요.")
+    #             rsubj_pdfs.append("파일을 확인해 주세요.")
     #             pass
     # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
 
     # result_pd = result[result['id'].isin(pdfs)]
     # print(len(result_pd))
 
-    # result_pd['description'] = des_pdfs
+    # result_pd['description'] =  pd.Series(des_pdfs)
     # result_pd['rdescription'] = rdes_pdfs
     # result_pd['rsubjet'] = rsubj_pdfs
     # save_pickle(result_pd,'pdfs')
     # print("Saved Pickle")
     # print('------------------------------next type-------------------------------------------')
 
-    # start = time.time()  # 시작 시간 저장
-    # docs = []
-    # des_docs = []
-    # rdes_docs = []
-    # rsubj_docs = []
-    # for row, value in result.iterrows():
-    #     if value['filename'][-4:] in ['docx']:
-    #         try:
-    #             print("Issue id {} found. file: {} , created on: {}".format(value['id'],value['filename'],value['created_on']))
-    #             file_id = str(value['id'])
-    #             file_name = value['filename']
-    #             prefix_url = "https://redmine.netand.co.kr/attachments/download/"
-    #             enc_name = encode_text(file_name)
-    #             url = prefix_url + file_id + '/' + enc_name
-    #             redmine.download(url,savepath='/datastore',filename = file_name)
+    start = time.time()  # 시작 시간 저장
+    docs = []
+    des_docs = []
+    rdes_docs = []
+    rsubj_docs = []
+    for row, value in result.iterrows():
+        if value['filename'][-4:] in ['docx']:
+            try:
+                print("Issue id {} found. file: {} , created on: {}".format(value['id'],value['filename'],value['created_on']))
+                file_id = str(value['id'])
+                file_name = value['filename']
+                prefix_url = "https://redmine.netand.co.kr/attachments/download/"
+                enc_name = encode_text(file_name)
+                url = prefix_url + file_id + '/' + enc_name
+                redmine.download(url,savepath='/datastore',filename = file_name)
                 
-    #             docs.append(value['id'])
+                docs.append(value['id'])
             
-    #             r_result = get_r_contents(value['container_id'])
-    #             rdes_docs.append(r_result['description'])
-    #             rsubj_docs.append(r_result['subject'])
+                r_result = get_r_contents(int(value['container_id']))
+                rdes_docs.append(r_result['description'])
+                rsubj_docs.append(r_result['subject'])
                 
-    #             content = get_doc_text('/datastore/'+file_name)
-    #             des_docs.append(content)
+                content = get_doc_text('/datastore/'+file_name)
+                des_docs.append(content)
 
-    #         except Exception as e:
-    #             des_docs.append("파일을 확인해 주세요.")
-    #             rdes_docs.append("파일을 확인해 주세요.")
-    #             rsubj_docs.append("파일을 확인해 주세요.")
-    #             pass
+            except Exception as e:
+                des_docs.append("파일을 확인해 주세요.")
+                r_result = get_r_contents(int(value['container_id']))
+                rdes_docs.append(r_result['description'])
+                rsubj_docs.append(r_result['subject'])
+                rdes_docs.append("파일을 확인해 주세요.")
+                rsubj_docs.append("파일을 확인해 주세요.")
+                pass
 
-    # result_doc = result[result['id'].isin(docs)]
-    # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
-    # print(len(result_doc))
-    # result_doc['description'] = des_docs
-    # result_doc['rdescription'] = rdes_docs
-    # result_doc['rsubjet'] = rsubj_docs
-    # save_pickle(result_doc,'docs')
-    # print("Saved Pickle")
-    # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
-    # print('------------------------------next type-------------------------------------------')
+    result_doc = result[result['id'].isin(docs)]
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+    print(len(result_doc))
+    result_doc['description'] = des_docs
+    result_doc['rdescription'] = rdes_docs
+    result_doc['rsubjet'] = rsubj_docs
+    save_pickle(result_doc,'docs')
+    print("Saved Pickle")
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+    print('------------------------------next type-------------------------------------------')
 
-    # start = time.time()  # 시작 시간 저장
-    # txts = []
-    # des_txts = []
-    # rdes_txts = []
-    # rsubj_txts = []
-    # for row, value in result.iterrows():
-    #     if value['filename'][-3:] in ['txt']:
-    #         try:
-    #             print("Issue id {} found. file: {} , created on: {}".format(value['id'],value['filename'],value['created_on']))
-    #             file_id = str(value['id'])
-    #             file_name = value['filename']
-    #             prefix_url = "https://redmine.netand.co.kr/attachments/download/"
-    #             enc_name = encode_text(file_name)
-    #             url = prefix_url + file_id + '/' + enc_name
-    #             redmine.download(url,savepath='/datastore',filename = file_name)
-    #             content = get_txt_text('/datastore/'+file_name)
-    #             des_txts.append(content)
-    #             txts.append(value['id'])
+    start = time.time()  # 시작 시간 저장
+    txts = []
+    des_txts = []
+    rdes_txts = []
+    rsubj_txts = []
+    for row, value in result.iterrows():
+        if value['filename'][-3:] in ['txt']:
+            try:
+                print("Issue id {} found. file: {} , created on: {}".format(value['id'],value['filename'],value['created_on']))
+                file_id = str(value['id'])
+                file_name = value['filename']
+                prefix_url = "https://redmine.netand.co.kr/attachments/download/"
+                enc_name = encode_text(file_name)
+                url = prefix_url + file_id + '/' + enc_name
+                redmine.download(url,savepath='/datastore',filename = file_name)
+                content = get_txt_text('/datastore/'+file_name)
+                txts.append(value['id'])
 
-    #             r_result = get_r_contents(value['container_id'])
-    #             rdes_txts.append(r_result['description'])
-    #             rsubj_txts.append(r_result['subject'])
-    #         except Exception as e:
-    #             des_txts.append("파일을 확인해 주세요.")
-    #             rdes_txts.append("파일을 확인해 주세요.")
-    #             rsubj_txts.append("파일을 확인해 주세요.")
-    #             pass
+                r_result = get_r_contents(int(value['container_id']))
+                rdes_txts.append(r_result['description'])
+                rsubj_txts.append(r_result['subject'])
+                des_txts.append(content)
 
-    # result_txt = result[result['id'].isin(txts)]
-    # print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+            except Exception as e:
+                des_txts.append("파일을 확인해 주세요.")
+                r_result = get_r_contents(int(value['container_id']))
+                rdes_txts.append(r_result['description'])
+                rsubj_txts.append(r_result['subject'])
+                rdes_txts.append("파일을 확인해 주세요.")
+                rsubj_txts.append("파일을 확인해 주세요.")
+                pass
 
-    # result_txt['description'] = des_txts
-    # result_txt['rdescription'] = rdes_txts
-    # result_txt['rsubjet'] = rsubj_txts
+    result_txt = result[result['id'].isin(txts)]
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
 
-    # save_pickle(result_txt,'txts')
-    # print("Saved Pickle")
-    # print('------------------------------next type-------------------------------------------')
+    result_txt['description'] = des_txts
+    result_txt['rdescription'] = rdes_txts
+    result_txt['rsubjet'] = rsubj_txts
+
+    save_pickle(result_txt,'txts')
+    print("Saved Pickle")
+    print('------------------------------next type-------------------------------------------')
 
     # start = time.time()  # 시작 시간 저장
     # excels = []
@@ -380,11 +402,15 @@ def getIssues():
     #             des_excels.append(content)
     #             excels.append(value['id'])
 
-    #             r_result = get_r_contents(value['container_id'])
+    #             r_result = get_r_contents(int(value['container_id']))
     #             rdes_excels.append(r_result['description'])
     #             rsubj_excels.append(r_result['subject'])
+
     #         except Exception as e:
     #             des_excels.append("파일을 확인해 주세요.")
+    #             r_result = get_r_contents(int(value['container_id']))
+    #             rdes_excels.append(r_result['description'])
+    #             rsubj_excels.append(r_result['subject'])
     #             rdes_excels.append("파일을 확인해 주세요.")
     #             rsubj_excels.append("파일을 확인해 주세요.")
     #             pass
@@ -396,7 +422,7 @@ def getIssues():
     # result_e['rsubjet'] = rsubj_excels
     # save_pickle(result_e,'excels')
     # print("Saved Pickle")
-    ##################################################################################################################
+    #################################################################################################################
     
     # result = pd.concat([result_p,result_d,result_t,result_pd])
     # result = pd.concat([result_p,result_d,result_t,result_pd,result_e])
@@ -436,35 +462,41 @@ def issueToElasticSearch(df):
 
 
 def begin_rspingestor():
-    # p = getIssues()
-    # df = pd.DataFrame()
-    # with open('docs.pickle', 'rb') as f:
-    #     data = pickle.load(f)
-    #     df_docs = pd.DataFrame(data)
-    #     df = pd.concat([df,df_docs])
-    # # with open('pdfs.pickle', 'rb') as ff:
-    # #     dataf = pickle.load(ff)
-    # #     df_pdfs = pd.DataFrame(dataf)
-    # #     df = pd.concat([df,df_pdfs])
-    # with open('txts.pickle', 'rb') as fff:
-    #     datat = pickle.load(fff)
-    #     df_txts = pd.DataFrame(datat)
-    #     df = pd.concat([df,df_txts])
-    # with open('ppt.pickle', 'rb') as ffff:
-    #     dataff = pickle.load(ffff)
-    #     df_ppts = pd.DataFrame(dataff)
-    #     df = pd.concat([df,df_ppts])
-    # with open('excels.pickle', 'rb') as e:
-    #     datae = pickle.load(e)
-    #     df_e = pd.DataFrame(datae)
-    #     df = pd.concat([df,df_e])
+    # print("")
+    try:
+        # p = getIssues()   
+        df = pd.DataFrame()
+        with open('ppt.pickle', 'rb') as ffff:
+            dataff = pickle.load(ffff)
+            df_ppts = pd.DataFrame(dataff)
+            df = pd.concat([df,df_ppts])
+        with open('docs.pickle', 'rb') as f:
+            data = pickle.load(f)
+            df_docs = pd.DataFrame(data)
+            df = pd.concat([df,df_docs])
+        with open('pdfs.pickle', 'rb') as ff:
+            dataf = pickle.load(ff)
+            df_pdfs = pd.DataFrame(dataf)
+            df = pd.concat([df,df_pdfs])
+        with open('txts.pickle', 'rb') as fff:
+            datat = pickle.load(fff)
+            df_txts = pd.DataFrame(datat)
+            df = pd.concat([df,df_txts])
+        # with open('excels.pickle', 'rb') as e:
+        #     datae = pickle.load(e)
+        #     df_e = pd.DataFrame(datae)
+        #     df = pd.concat([df,df_e])
 
 
-    # p = df[['id','container_id','filename','description','created_on','rdescription','rsubjet']]
-    # p.rename(columns={'filename':'subject'},inplace=True)
-    print("")
-    # for idx in range(int(len(p)/50)):
-    #     slice_data = p.iloc[idx*50:(idx+1)*50,:]
-    #     issueToElasticSearch(slice_data)
-    #     time.sleep(30)
-# begin_rspingestor()
+        p = df[['id','container_id','filename','description','created_on','rdescription','rsubjet']]
+        p.rename(columns={'filename':'subject'},inplace=True)
+        time.sleep(10)
+        for idx in range(int(len(p)/30)):
+            slice_data = p.iloc[idx*30:(idx+1)*30,:]
+            print(slice_data)
+            issueToElasticSearch(slice_data)
+            time.sleep(30)
+    except Exception as e:
+        print(e)
+        pass
+begin_rspingestor()

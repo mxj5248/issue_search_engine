@@ -35,12 +35,12 @@ def do_the_thing():
     return "OK", 200
 
 def jobElsCollect():
-    # pushJob(CreateRedmineIndex)
-    # pushJob(IngestRedmineData)
-    # pushJob(CreatePortalIndex)
-    # pushJob(IngestPortalData)
-    # pushJob(CreateNotionIndex)
-    # pushJob(IngestNotionData)
+    pushJob(CreateRedmineIndex)
+    pushJob(IngestRedmineData)
+    pushJob(CreatePortalIndex)
+    pushJob(IngestPortalData)
+    pushJob(CreateNotionIndex)
+    pushJob(IngestNotionData)
     pushJob(CreateRedminespIndex)
     pushJob(IngestRedminespData)
 

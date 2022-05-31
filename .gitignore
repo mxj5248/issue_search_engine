@@ -8,6 +8,12 @@ containers/dash/datastore/*
 containers/dash/log/*
 containers/mongo/data/*
 
+elasticsearch/backup/backup/*
+elasticsearch/data/*
+elasticsearch/logs/*
+
+src/engine/*.pickle
+
 !.gitkeep
 
 .DS_Store
