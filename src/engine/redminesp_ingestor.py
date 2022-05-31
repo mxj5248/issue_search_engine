@@ -499,4 +499,4 @@ def begin_rspingestor():
     except Exception as e:
         print(e)
         pass
-begin_rspingestor()
+# begin_rspingestor()
